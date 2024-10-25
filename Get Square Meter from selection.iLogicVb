@@ -1,0 +1,86 @@
+﻿
+
+'uses TransientBRep to calculate area and volume
+
+'of the two overlapped bodies in the multibody part
+
+ 
+
+    Dim oPartDoc As PartDocument
+
+    Set oPartDoc = ThisApplication.ActiveDocument
+
+    Dim oPartDef As PartComponentDefinition
+
+    Set oPartDef = oPartDoc.ComponentDefinition
+
+   
+
+    Dim oRealBody1 As SurfaceBody
+
+    Set oRealBody1 = oPartDef.SurfaceBodies.Item(1)
+
+    Dim oRealBody2 As SurfaceBody
+
+    Set oRealBody2 = oPartDef.SurfaceBodies.Item(2)
+
+ 
+
+    Dim oTransientBRep As TransientBRep
+
+    Set oTransientBRep = ThisApplication.TransientBRep
+
+   
+
+    Dim oBody1 As SurfaceBody
+
+    Set oBody1 = oTransientBRep.Copy(oRealBody1)
+
+    Dim oBody2 As SurfaceBody
+
+    Set oBody2 = oTransientBRep.Copy(oRealBody2)
+
+   
+
+    'do Boolean operation on the two bodies
+
+    'only oBody1 has to be transient
+
+    Call oTransientBRep.DoBoolean( _
+
+        oBody1, oBody2, BooleanTypeEnum.kBooleanTypeUnion)
+
+''    Call oTransientBRep.DoBoolean( _
+
+''        oBody1, oBody2, BooleanTypeEnum.kBooleanTypeIntersect)
+
+   
+
+    Debug.Print "Volume = " & oBody1.Volume(0.001)
+
+    Debug.Print "Area   = " & GetBodyArea(oBody1)
+
+
+ 
+
+Private Function GetBodyArea(ByRef oBody As SurfaceBody) As Double
+
+        Dim area As Double
+
+        area = 0
+
+        Dim oFace As Face
+
+        For Each oFace In oBody.Faces
+
+            Dim oEval As SurfaceEvaluator
+
+            Set oEval = oFace.Evaluator
+
+            area = area + oEval.Area
+
+        Next
+
+        GetBodyArea = area
+
+End Function

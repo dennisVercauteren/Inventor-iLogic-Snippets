@@ -1,0 +1,12 @@
+﻿'define document
+Dim oDoc As PartDocument
+oDoc = ThisDoc.Document
+'look at the workplane collection
+For Each oWorkPlane In oDoc.ComponentDefinition.WorkPlanes
+'toggle all work planes
+If oWorkPlane.Visible = True Then
+oWorkPlane.Visible = False
+ElseIf oWorkPlane.Visible = False Then
+oWorkPlane.Visible = True
+End If
+Next

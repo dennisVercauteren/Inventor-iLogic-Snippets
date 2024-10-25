@@ -1,0 +1,67 @@
+﻿
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oFileName = ThisDoc.FileName(False) 'without extension
+oPDFAddIn = ThisApplication.ApplicationAddIns.ItemById _
+("{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+'Define the drawing
+Dim oDrawing As DrawingDocument
+oDrawing = ThisDoc.Document
+
+Dim oSheet As Sheet
+Dim lPos As Long
+Dim rPos As Long
+Dim sLen As Long
+Dim sSheetName As String
+Dim iSheetNumber As Integer
+
+'step through each drawing sheet
+For Each oSheet In oDrawing.Sheets
+
+'find the seperator in the sheet name:number
+lPos = InStr(oSheet.Name, ":")
+'find the number of characters in the sheet name
+sLen = Len(oSheet.Name)
+'find the sheet name
+sSheetName = Left(oSheet.Name, lPos -1)
+'find the sheet number
+iSheetNumber = Right(oSheet.Name, sLen -lPos)
+
+'set PDF Options
+If oPDFAddIn.HasSaveCopyAsOptions(oDataMedium, oContext, oOptions) Then
+oOptions.Value("All_Color_AS_Black") = 0
+oOptions.Value("Remove_Line_Weights") = 1
+oOptions.Value("Vector_Resolution") = 400
+oOptions.Value("Sheet_Range") = Inventor.PrintRangeEnum.kPrintSheetRange
+oOptions.Value("Custom_Begin_Sheet") = iSheetNumber
+oOptions.Value("Custom_End_Sheet") = iSheetNumber
+End If
+
+'get PDF target folder path
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".pdf"
+oFolder = Left(oPath, InStrRev(oPath, "\",-1))
+oPublication = oFolder & "\" & "Master tekeningen" & "\"
+'Check for the PDF folder and create it if it does not exist
+If Not System.IO.Directory.Exists(oPublication) Then
+System.IO.Directory.CreateDirectory(oPublication)
+End If
+
+'Set the PDF target file name
+oDataMedium.FileName = oPublication &  "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision &".pdf"
+
+
+'Publish document
+oPDFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+
+
+Next
+
+'------end of iLogic-------
+

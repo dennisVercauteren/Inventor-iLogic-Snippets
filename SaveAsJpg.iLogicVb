@@ -1,0 +1,34 @@
+﻿ 
+Sub Main()
+
+question = MessageBox.Show("Do you want to create a .jpg?" & vbCrLf & "Remember to fill your Iproperties before creating the image", "iLogic Question",MessageBoxButtons.YesNo,MessageBoxIcon.Question)
+
+'set condition based on answer
+If question = vbNo Then
+'exit the rule
+Return       
+Else If question = vbYes Then
+
+
+'Get the active document and the active Camera Position
+oInventor = ThisApplication
+oDoc = oInventor.ActiveDocument
+oView = oInventor.ActiveView
+oCamera = oView.Camera
+
+'Get the Save location
+oPath = ThisDoc.WorkspacePath()
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oVolgnummer = iProperties.Value("Custom", "Volgnummer")
+oFolder = Left(oPath, InStrRev(oPath, "\",-1)) & "Master tekeningen"
+
+Call oView.SaveAsBitmap(oFolder & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision & "-" & oVolgnummer &".jpg", 1000,1000)
+
+i = MessageBox.Show("Preview the .jpg file?", "Title",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then ThisDoc.Launch(oFolder & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision & "-" & oVolgnummer & ".jpg") 
+
+
+End If
+End Sub

@@ -1,0 +1,10 @@
+﻿' Create a camera to be used to define the view orientation. 
+Dim cam As Camera 
+cam = ThisApplication.TransientObjects.CreateCamera 
+
+' Set up the camera. 
+cam.Perspective = True 
+cam.ViewOrientationType = kIsoTopRightViewOrientation 
+Next
+
+

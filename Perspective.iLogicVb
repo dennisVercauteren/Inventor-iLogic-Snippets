@@ -1,0 +1,4 @@
+﻿Dim oCamera As Camera
+oCamera = ThisApplication.ActiveView.Camera
+oCamera.ViewOrientationType = kIsoTopRightViewOrientation
+oCamera.Apply

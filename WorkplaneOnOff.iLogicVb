@@ -1,0 +1,37 @@
+﻿'get user input
+oInput = InputRadioBox("Select workplane visibility:", _
+ "Turn ON workplanes for all components", "Turn OFF workplanes for all components", "True", "iLogic")
+
+'Define the open document
+Dim openDoc As Document
+openDoc = ThisDoc.Document
+
+'toggle work planes in the open document (top level assembly)
+For Each oWorkPlane In openDoc.ComponentDefinition.WorkPlanes
+'toggle all work planes
+If oInput = True Then
+oWorkPlane.Visible = True
+ElseIf oInput = False Then
+oWorkPlane.Visible = False
+End If
+Next
+
+'Look at all of the files referenced in the open document
+Dim docFile As Document
+For Each docFile In openDoc.AllReferencedDocuments                
+'format  file name                   
+Dim FNamePos As Long
+FNamePos = InStrRev(docFile.FullFileName, "\", -1)                        
+Dim docFName As String 
+docFName = Right(docFile.FullFileName, Len(docFile.FullFileName) - FNamePos) 
+For Each oWorkPlane In docFile.ComponentDefinition.WorkPlanes
+'toggle all work planes
+If oInput = True Then
+oWorkPlane.Visible = True
+ElseIf oInput = False Then
+oWorkPlane.Visible = False
+End If
+Next
+Next
+
+iLogicVb.UpdateWhenDone = True

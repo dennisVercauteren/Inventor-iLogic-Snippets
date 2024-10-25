@@ -1,0 +1,67 @@
+﻿' Get the STEP translator Add-In.
+    Dim oSTEPTranslator As TranslatorAddIn
+    oSTEPTranslator = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+
+    If oSTEPTranslator Is Nothing Then
+        MsgBox ("Could not access STEP translator.")
+        Exit Sub
+    End If
+
+    Dim oContext As TranslationContext
+    oContext = ThisApplication.TransientObjects.CreateTranslationContext
+    Dim oOptions As NameValueMap
+    oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+    If oSTEPTranslator.HasSaveCopyAsOptions(ThisApplication.ActiveDocument, oContext, oOptions) Then
+        ' Set application protocol.
+        ' 2 = AP 203 - Configuration Controlled Design
+        ' 3 = AP 214 - Automotive Design
+        oOptions.Value("ApplicationProtocolType") = 3
+
+        ' Other options...
+        'oOptions.Value("Author") = ""
+        'oOptions.Value("Authorization") = ""
+        'oOptions.Value("Description") = ""
+        'oOptions.Value("Organization") = ""
+		oInventor = ThisApplication
+		oDoc = oInventor.ActiveDocument
+		oView = oInventor.ActiveView
+		oCamera = oView.Camera
+		oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+        oContext.Type = kFileBrowseIOMechanism
+		oPath = "Z:\Branche Food\Users\DV\Bibliotheek"
+		oFolder = "Z:\Branche Food\Users\DV\Bibliotheek"
+		oPublication = "Z:\Branche Food\Users\DV\Bibliotheek"
+		oDate = DateTime.Now.ToString("yyyy-MM-dd")
+		oPartnumber = iProperties.Value("Project", "Part Number")
+		oProjectnumber = iProperties.Value("Project", "Project")
+		oRevision = iProperties.Value("Project", "Revision Number")
+
+		iLogicForm.ShowGlobal("iProperty Check", FormMode.Modal)
+		Description = iProperties.Value("Project", "Description")
+		Categorie = iProperties.Value("Summary", "Category")
+
+        Dim oData As DataMedium
+      oData = ThisApplication.TransientObjects.CreateDataMedium
+      oDataMedium.FileName = oPublication &  "\" & Categorie & "-" & Description & ".stp"
+
+ 
+Dim num As Long
+num = ThisApplication.ActiveDocument.ComponentDefinition.Occurrences.Count
+jj=1
+While jj<num+1
+Component.Color(ThisApplication.ActiveDocument.ComponentDefinition.Occurrences.Item(jj).Name) = "white"
+jj=jj+1
+End While
+iLogicVb.UpdateWhenDone = True
+
+
+        Call oSTEPTranslator.SaveCopyAs(ThisApplication.ActiveDocument, oContext, oOptions, oDataMedium)
+		Call oView.SaveAsBitmap(oPublication &  "\" & Categorie & "-" & Description & ".jpg", 1000, 1000)
+    End If
+	
+	
+	
+	
+	
+
+

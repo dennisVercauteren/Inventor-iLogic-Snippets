@@ -1,0 +1,125 @@
+﻿'get user input
+oInput = "False"
+'InputRadioBox("Select work feature visibility:", _
+' "Turn ON work features for all components", _
+' "Turn OFF work features for all components", "False", "iLogic")
+
+' set a reference to the assembly component definintion.
+Dim oAsmCompDef As AssemblyComponentDefinition
+oAsmCompDef = ThisApplication.ActiveDocument.ComponentDefinition
+
+'Define the open document (top level assembly)
+Dim openDoc As Document
+openDoc = ThisDoc.Document
+'define view rep 
+Dim oViewRep As DesignViewRepresentation
+Dim sVRep As String
+'change to something else if Default is used for something already
+sVRep = "Default"
+
+'create or activate view rep in the top level assembly
+Try     
+oAsmCompDef.RepresentationsManager.DesignViewRepresentations.Item(sVRep).Activate    
+Catch
+'create new View Rep
+oAsmCompDef.RepresentationsManager.DesignViewRepresentations.Add(sVRep)
+End Try
+
+'create or activate view rep in subassemblies
+Dim docFile As Document
+For Each docFile In openDoc.AllReferencedDocuments                
+Dim subDoc As AssemblyComponentDefinition
+If docFile.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+subDoc = docFile.ComponentDefinition
+Try     
+subDoc.RepresentationsManager.DesignViewRepresentations.Item(sVRep).Activate    
+Catch
+'create new View Rep
+subDoc.RepresentationsManager.DesignViewRepresentations.Add(sVRep)
+End Try
+Else 
+End If
+Next
+
+    'toggle work features in the open document (top level assembly)
+    For Each oWorkPlane In openDoc.ComponentDefinition.WorkPlanes
+    If oInput = True Then
+    oWorkPlane.Visible = True
+    ElseIf oInput = False Then
+    oWorkPlane.Visible = False
+    End If
+    Next
+
+    For Each oWorkAxis In openDoc.ComponentDefinition.WorkAxes
+    If oInput = True Then
+    oWorkAxis.Visible = True
+    ElseIf oInput = False Then
+    oWorkAxis.Visible = False
+    End If
+    Next
+
+    For Each oWorkPoint In openDoc.ComponentDefinition.WorkPoints
+    If oInput = True Then
+    oWorkPoint.Visible = True
+    ElseIf oInput = False Then
+    oWorkPoint.Visible = False
+    End If
+    Next
+	
+	For Each oSketches In openDoc.ComponentDefinition.Sketches
+    If oInput = True Then
+    oSketches.Visible = True
+    ElseIf oInput = False Then
+    oSketches.Visible = False
+    End If
+    Next
+	
+	
+
+'look at only the subassemblies
+Dim subDocFile As Document
+For Each oCompOcc in oAsmCompDef.Occurrences
+If oCompOcc.DefinitionDocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
+oCompOcc.SetDesignViewRepresentation(sVRep,, True) 'True sets the view rep to be associative
+Else 
+End If
+Next
+
+
+'Look at all of the files referenced in the open document
+For Each docFile In openDoc.AllReferencedDocuments                
+
+    'toggle work features in the components
+    For Each oWorkPlane In docFile.ComponentDefinition.WorkPlanes
+    If oInput = True Then
+    oWorkPlane.Visible = True
+    ElseIf oInput = False Then
+    oWorkPlane.Visible = False
+    End If
+    Next
+
+    For Each oWorkAxis In docFile.ComponentDefinition.WorkAxes
+    If oInput = True Then
+    oWorkAxis.Visible = True
+    ElseIf oInput = False Then
+    oWorkAxis.Visible = False
+    End If
+    Next
+
+    For Each oWorkPoint In docFile.ComponentDefinition.WorkPoints
+    If oInput = True Then
+    oWorkPoint.Visible = True
+    ElseIf oInput = False Then
+    oWorkPoint.Visible = False
+    End If
+    Next
+	
+	For Each oSketches In docFile.ComponentDefinition.Sketches
+    If oInput = True Then
+    oSketches.Visible = True
+    ElseIf oInput = False Then
+    oSketches.Visible = False
+    End If
+    Next
+Next
+iLogicVb.UpdateWhenDone = True

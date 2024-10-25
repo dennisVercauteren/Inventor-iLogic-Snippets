@@ -1,0 +1,11 @@
+﻿' Get a reference to the active document.
+' This can be an Assembly or Part document.
+Dim oDoc As Document
+oDoc = ThisApplication.ActiveDocument
+
+' Create a new render style by copying the existing one.
+Dim oNewRenderStyle As RenderStyle
+oNewRenderStyle = ("Dirty Gold")
+
+ 
+

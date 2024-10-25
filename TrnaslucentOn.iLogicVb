@@ -1,0 +1,26 @@
+﻿' Get the active assembly document.
+
+Dim oAsmDoc As AssemblyDocument 
+
+oAsmDoc = ThisApplication.ActiveDocument
+
+' Iterate through all of the documents referenced by the assembly.
+
+Dim oDoc As Document
+
+For Each oDoc In oAsmDoc.AllReferencedDocuments
+
+' Verify that the document is a part.
+
+If oDoc.DocumentType = kPartDocumentObject Then
+
+Dim oPartDoc As PartDocument = oDoc
+Dim oWorkSurface As WorkSurface
+oWorkSurface = oDoc.ComponentDefinition.WorkSurfaces.Item(1)
+oWorkSurface.Translucent = False
+
+End If
+
+Next
+
+InventorVb.DocumentUpdate()

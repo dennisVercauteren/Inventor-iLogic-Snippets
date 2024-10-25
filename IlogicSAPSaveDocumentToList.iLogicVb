@@ -1,0 +1,59 @@
+﻿Dim oProjectnumber As String = iProperties.Value("Custom","BPROJNR")
+Dim oRootProjectnummer As String = oProjectnumber.Substring(0, 6)
+Dim oDocumentnumber As String = iProperties.Value("Custom","IDNR")
+Dim oRevision As String = iProperties.Value("Custom","REV")
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+Dim oCompany As String = iProperties.Value("Custom","Kunde")
+Dim oLocation As String = iProperties.Value("Custom","ORT")
+Dim oSubject1 As String = iProperties.Value("Custom","ZEILE1")
+Dim oSubject2 As String = iProperties.Value("Custom","ZEILE2")
+oTime = DateTime.Now.ToString("HH:mm")
+Dim oProjectleider As String = iProperties.Value("Custom","Projectleider")
+Dim oVerkoper As String = iProperties.Value("Custom","Verkoper")
+
+
+
+
+Dim oDocument As Document 
+oDocument = ThisApplication.ActiveDocument 
+
+oPublication = oFolder & "\" & oRootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+
+SharedVariable("excelLocation")= "C:\Users\DVercauteren\Google Drive\001. PROJECTEN\013. AZO\Documentnummers\TimeLogSAP.xlsx"
+excelLocation = SharedVariable("excelLocation")
+SharedVariable("sheetName")= "Blad1"
+sheetName = SharedVariable("sheetName")
+SharedVariable("rowPN")= "Project"
+rowPN = SharedVariable("rowPN")
+
+GoExcel.Open(excelLocation, sheetName)
+
+'index row 2 through 10000
+	For rowPN = 2 To 10000
+'find first empty cell in column A
+ If (GoExcel.CellValue("A" & rowPN) = "") Then
+'create a variable for the cell value that is one row less than the empty cell row
+    lastPN = GoExcel.CellValue("A" & rowPN)
+    lastDesc = GoExcel.CellValue("B" & rowPN)
+         Exit For	
+		End If
+Next
+
+i = rowPN
+
+GoExcel.CellValue(excelLocation, sheetName, ("A" & i)) = oProjectnumber
+GoExcel.CellValue(excelLocation, sheetName, ("B" & i)) = oDocumentnumber
+GoExcel.CellValue(excelLocation, sheetName, ("C" & i)) = oCompany
+GoExcel.CellValue(excelLocation, sheetName, ("D" & i)) = oLocation
+GoExcel.CellValue(excelLocation, sheetName, ("E" & i)) = oSubject1
+GoExcel.CellValue(excelLocation, sheetName, ("F" & i)) = oSubject2
+GoExcel.CellValue(excelLocation, sheetName, ("G" & i)) = oDate
+GoExcel.CellValue(excelLocation, sheetName, ("H" & i)) = oTime
+GoExcel.CellValue(excelLocation, sheetName, ("I" & i)) = oProjectleider
+GoExcel.CellValue(excelLocation, sheetName, ("J" & i)) = oVerkoper
+GoExcel.CellValue(excelLocation, sheetName, ("K" & i)) = oFileSubtype
+
+GoExcel.Save
+GoExcel.Save
+GoExcel.Close
+GoExcel.Close

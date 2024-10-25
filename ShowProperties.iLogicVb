@@ -1,0 +1,32 @@
+﻿Sub Main()
+Dim oDoc As Document
+oDoc = ThisApplication.ActiveDocument
+Dim comps As SelectSet
+Dim comp As ComponentOccurrence
+comps = oDoc.SelectSet
+'If there are selected components we can do something, otherwise we're done
+If comps.count = 0 Then Exit Sub
+Dim aDoc As DocumentsEnumerator
+aDoc = oDoc.AllReferencedDocuments
+Dim iDoc As Document
+Dim cName As String
+Dim cTS As String
+Dim sTS As String
+Dim FNP As Long
+Dim cFNP As Long
+Dim docFN As String
+For Each iDoc In aDoc
+sTS = iDoc.FullFileName
+FNP = InStrRev(sTS, "\", - 1)
+docFN = Mid(sTS, FNP + 1, Len(sTS) - FNP)
+For Each comp In comps
+cTS = comp.Name
+cFNP = InStrRev(cTS, ":", - 1)
+cName = Left(cTS, cFNP - 1)
+If cName = Left(docFN, Len(docFN)-4) Then
+'Set iProperty in each of the selected parts in assembly
+iProperties.Value(docFN, "Custom", "Mark") = "this part is now marked"
+End If
+Next
+Next
+End Sub

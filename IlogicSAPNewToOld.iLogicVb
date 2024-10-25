@@ -1,0 +1,27 @@
+﻿iProperties.Value("Project", "Project") = iProperties.Value("Custom","BPROJNR")
+iProperties.Value("Project", "Part Number") = iProperties.Value("Custom","IDNR")
+iProperties.Value("Project", "Revision Number") = iProperties.Value("Custom","REV")
+iProperties.Value("Summary", "Company") = iProperties.Value("Custom","Kunde")
+iProperties.Value("Summary", "Company") = iProperties.Value("Custom","ORT")
+iProperties.Value("Summary", "Subject") = iProperties.Value("Custom","ZEILE1")
+iProperties.Value("Summary", "Subject") = iProperties.Value("Custom","ZEILE2")
+
+
+Dim Opsomming As New ArrayList
+Opsomming.Add("Wim Van Roy")
+Opsomming.Add("Jan Vermeulen")
+Opsomming.Add("Mark Haarman")
+Opsomming.Add("Tom Steurs")
+Opsomming.Add("André Correljé")
+
+
+'Opsomming is hier de Array die de mogelijke keuzen weergeeft.
+iProperties.Value("Custom", "Projectleider")= InputListBox("Kies Omschrijving",Opsomming, iProperties.Value("Project", "Description") , Title := "Projectleider",ListName := "Projectleider")
+
+Dim Opsomming1 As New ArrayList
+Opsomming1.Add("Gerrit Ver Eecke")
+Opsomming1.Add("Karel Claes")
+Opsomming1.Add("Jean Paul Van Der Heiden")
+
+'Opsomming is hier de Array die de mogelijke keuzen weergeeft.
+iProperties.Value("Custom", "Verkoper")= InputListBox("Kies Omschrijving",Opsomming1, iProperties.Value("Project", "Description") , Title := "Verkoper",ListName := "Verkoper")

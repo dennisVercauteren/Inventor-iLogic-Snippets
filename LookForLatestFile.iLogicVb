@@ -1,0 +1,70 @@
+﻿Sub Main GetLatestFile()
+
+Dim strFolder  As String
+Dim strFile    As String
+Dim latestFile As String
+Dim dtLast     As Date
+
+
+'   assign variables
+    strFolder = "Z:\Branche Food\Users\DV\IlogicRules\" 'the path of the file drop folder (you need the final "\" on the directory
+'   strFile = Dir(strFolder & "\*.iLogicVb", vbNormal) ' Excel Files
+'   strFile = Dir(strFolder & "\*.csv", vbNormal)  ' CSV Files
+	strFile = Dir(strFolder & "\*.*", vbNormal)    ' Any File
+
+'   loop through files to find latest modified date
+    Do While strFile <> ""
+        If FileDateTime(strFolder & strFile) > dtLast Then
+            dtLast = FileDateTime(strFolder & strFile)
+			NewestFile = strFile
+            latestFile = strFolder & strFile
+        End If
+        strFile = Dir
+    Loop
+	
+	
+	
+	MessageBox.Show(latestFile, "Title")
+	MessageBox.Show(NewestFile, "Title")
+	
+FileCopy (latestFile, "Z:\Branche Food\Users\DV\IlogicRules\NieuweMap\" & NewestFile)
+Kill (latestFile)
+
+
+'' Start Outlook.
+' ' If it is already running, you'll use the same instance...
+'   Dim oOApp
+'   oOApp = CreateObject("Outlook.Application")
+'   
+'' Log on. Doesn't hurt if you are already running and logged on...
+'   Dim olNs
+'   olNs = oOApp.GetNamespace("MAPI")
+'   olNs.Logon
+'
+''get the Inventor user name from the Inventor Options
+'myName= ThisApplication.GeneralOptions.UserName
+'
+''get current time
+'
+''save the file
+'ThisDoc.Save
+'
+''send email using outlook
+'Dim oOMail
+'oOMail = oOApp.CreateItem(olMailItem)
+'
+''Location created .pdf
+'
+'With oOMail
+'            'replace with your client's email address<b>and this is bold text</b>
+'            .To = ""
+'            .Subject = "document:" & oFileName
+'           	.htmlbody = " " 
+'			.htmlbody = .htmlbody & "<BODY style=font-size:12pt;font-family:Calibri>Beste," & "<br>"			
+'			.htmlbody = .htmlbody & "Je kan tekening: <b>" & oFileName & "</b> vinden in bijlage en onder: " & "<br>"
+'			.htmlbody = .htmlbody & myname &"</BODY>"
+'			.Attachments.Add (latestFile)
+'            .Display
+'End With
+
+End Sub

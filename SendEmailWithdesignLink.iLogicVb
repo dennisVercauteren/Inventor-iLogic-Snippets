@@ -1,0 +1,104 @@
+﻿oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".pdf"
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oFileName = ThisDoc.FileName(False) 'without extension
+oPDFAddIn = ThisApplication.ApplicationAddIns.ItemById _
+("{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+iProperties.Value("Custom", "Material") = "A2"
+iProperties.Value("Custom", "Finishing") = "2"
+iProperties.Value("Custom", "Leverancier") = "Raes"
+iLogicVb.RunExternalRule("saveasdwgpdf")
+oPathWorkspace = ThisDoc.WorkspacePath()
+Dim Str As String = oPathWorkspace
+Str = Str.Substring(22, Str.Length - 22)
+Dim ProjectNumber As String = Str.Substring(0, Str.IndexOf("\")) 
+iProperties.Value("Project", "Project")=ProjectNumber
+
+Dim IPJ as String
+Dim IPJ_Name As String
+Dim IPJ_Path As String
+Dim FNamePos As Long
+'set a reference to the FileLocations object.
+IPJ = ThisApplication.FileLocations.FileLocationsFile
+'get the location of the last backslash seperator
+FNamePos = InStrRev(IPJ, "\", -1)    
+'get the project file name with the file extension
+IPJ_Name = Right(IPJ, Len(IPJ) - FNamePos)
+'get the project name (without extension)
+IPJ_ShortName = Left(IPJ_Name, Len(IPJ_Name) - 4)
+'get the path of the folder containing the project file
+IPJ_Folder_Location = Left(IPJ, Len(IPJ) - Len(IPJ_Name))
+iProperties.Value("Summary", "Company") = Mid(IPJ_ShortName,13)
+
+
+
+
+oFolder = Left(oPathWorkspace, InStrRev(oPath, "\",)) 
+oPublication = oFolder & "Werkboek CAD" & "\" & "Publicatie" & "\" & oDate & "\"
+
+
+
+
+doc = ThisDoc.Document
+customPropertySet = doc.PropertySets.Item("Inventor User Defined Properties")
+modeldocname = IO.Path.GetFileName(ThisDoc.ModelDocument.FullFileName)
+mass = iProperties.Mass(modeldocname)
+iProperties.Value("Custom", "Mass") = Round(mass,2) & " kg"
+InventorVb.DocumentUpdate()
+
+
+ ' Start Outlook.
+ ' If it is already running, you'll use the same instance...
+   Dim oOApp
+   oOApp = CreateObject("Outlook.Application")
+   
+' Log on. Doesn't hurt if you are already running and logged on...
+   Dim olNs
+   olNs = oOApp.GetNamespace("MAPI")
+   olNs.Logon
+
+'get the Inventor user name from the Inventor Options
+myName= ThisApplication.GeneralOptions.UserName
+
+'get current time
+oTime = Now.ToShortTimeString
+
+'set status tag to For Review and time stamp
+iProperties.Value("Status", "Status") = "For Review @ " &  oTime
+
+'set the Design State to Pending
+iProperties.Value("Status", "Design State") = "Pending"
+
+'set the Checked By to user name from the Inventor Options
+iProperties.Value("Status", "Checked By") = myName
+
+'set the Checked Date to the current date
+iProperties.Value("Status", "Checked Date") = Now
+
+'save the file
+ThisDoc.Save
+
+'send email using outlook
+Dim oOMail
+
+oOMail = oOApp.CreateItem(olMailItem)
+
+With oOMail
+            'replace with your client's email address
+            .To = ""
+            .Subject = "Project: " & iProperties.Value("Project", "Project") & " - " & iProperties.Value("Summary", "Company") & " - " & iProperties.Value("Project", "Part Number") & " - " & iProperties.Value("Summary", "Subject")
+           	.Body = " " 
+			.Body = .Body & "Je kan tekening: " & iProperties.Value("Project", "Part Number") & " vinden onder: "
+			.Body =  Body & oPublication
+			.Body = .Body & " "
+			.Body = .Body & myname
+            .Display
+End With
+'------- end of iLogic code -------------------

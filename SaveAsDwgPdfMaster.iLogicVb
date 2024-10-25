@@ -1,0 +1,2 @@
+﻿iLogicVb.RunExternalRule("SaveAsPdfMaster")
+iLogicVb.RunExternalRule("SaveAsDWGMaster")

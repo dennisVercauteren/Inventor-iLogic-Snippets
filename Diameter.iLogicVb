@@ -1,0 +1,24 @@
+﻿'get model document (part or assembly) from the parent DrawingDocument
+modelName = IO.Path.GetFileName(ThisDrawing.ModelDocument.FullFileName)
+'save text parameter "MyText" value in the string variable Value
+Dim Value As String = "Ø"
+'Note: this string Value could be read from any source (e.g., excel sheet).
+Dim oDoc As DrawingDocument = ThisDrawing.Document
+Dim oSSet As SelectSet = oDoc.SelectSet
+If oSSet.Count = 0 Then
+MessageBox.Show("Select at least one dimension please", "DIM", _
+MessageBoxButtons.OK,MessageBoxIcon.Information)
+Else
+For Each obj As Object In oSSet
+'filter dimensions, ignore other selected entities
+If TypeOf obj Is GeneralDimension Then
+'reference to the selected dimension
+Dim oDim As GeneralDimension = obj
+'refrence to the DimensionText object
+Dim oDimensionText As DimensionText = oDim.Text
+'change dimension text
+oDimensionText.FormattedText = Value & "<DimensionValue/>"
+End If
+Next
+End If
+Beep

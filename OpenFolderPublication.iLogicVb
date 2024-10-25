@@ -1,0 +1,5 @@
+﻿oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oPath = ThisDoc.WorkspacePath()
+oFolder = Left(oPath, InStrRev(oPath, "\",)) 
+oPublication = oFolder & "Werkboek CAD" & "\" & "Publicatie" & "\" & oDate & "\"
+Shell("explorer.exe " & oPublication,vbNormalFocus)

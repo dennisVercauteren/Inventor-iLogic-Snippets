@@ -1,0 +1,56 @@
+﻿Dim oProjectnumber As String = iProperties.Value("Custom","BPROJNR")
+Dim oDocumentnumber As String = iProperties.Value("Custom","IDNR")
+Dim oLocation As String = iProperties.Value("Custom","ORT")
+Dim oSubject1 As String = iProperties.Value("Custom","ZEILE1")
+Dim oSubject2 As String = iProperties.Value("Custom","ZEILE2")
+Dim oCompany As String = iProperties.Value("Custom","Kunde")
+Dim RootProjectnummer As String = oProjectnumber.Substring(0, 6)
+Dim oRevision As String = iProperties.Value("Custom","REV")
+
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+
+oFolder = "Z:\SAP\Project"
+Dim oPublication As String = oFolder & "\" & RootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+
+iLogicVb.RunExternalRule("IlogicSAPSaveAsPdfdwg")
+iLogicVb.RunExternalRule("IlogicSAPSaveDocumentToList")
+
+Dim oDWG As String = oPublication &  "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & ".dwg"
+Dim oPDF As String = oPublication &  "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & ".pdf"
+
+' Start Outlook.
+ ' If it is already running, you'll use the same instance...
+   Dim oOApp
+   oOApp = CreateObject("Outlook.Application")
+   
+' Log on. Doesn't hurt if you are already running and logged on...
+   Dim olNs
+   olNs = oOApp.GetNamespace("MAPI")
+   olNs.Logon
+
+'get the Inventor user name from the Inventor Options
+myName= ThisApplication.GeneralOptions.UserName
+
+'get current time
+
+'save the file
+ThisDoc.Save
+
+'send email using outlook
+Dim oOMail
+oOMail = oOApp.CreateItem(olMailItem)
+
+With oOMail
+            'replace with your client's email address<b>and this is bold text</b>
+            .To = ""
+            .Subject = "Project:" & oProjectnumber &" - "& oCompany &" - "& oLocation &" - Documentnummer: "& oDocumentnumber &" - "& oSubject1 &" - "& oSubject2
+           	.htmlbody = " " 
+			.htmlbody = .htmlbody & "<BODY style=font-size:12pt;font-family:Calibri>Beste," & "<br>"			
+			.htmlbody = .htmlbody & "Je kan tekening: <b>" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision &"</b> vinden in bijlage en onder: " & "<br>"
+			.htmlbody = .htmlbody & "<a href='" & oPublication & "'>" & oPublication & "</a>." & "<br>"
+			.htmlbody = .htmlbody & "" & "<br>"
+			.htmlbody = .htmlbody & myname &"</BODY>"
+			.Attachments.Add (oDWG)
+			.Attachments.Add (oPDF)
+            .Display
+End With

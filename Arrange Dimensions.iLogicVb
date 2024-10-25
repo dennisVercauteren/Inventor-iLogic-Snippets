@@ -1,0 +1,29 @@
+﻿'Centre and arrange dimensions
+
+    Dim oDoc As DrawingDocument
+    oDoc = ThisApplication.ActiveDocument
+
+    ' Set a reference to the active sheet
+    Dim oSheet As Sheet
+    oSheet = oDoc.ActiveSheet
+
+    Dim oDrawingDim As DrawingDimension
+    Dim oDrawingDims As DrawingDimensions
+    Dim oDimsToBeArranged As ObjectCollection
+    
+    ' Iterate over all dimensions in the drawing and
+    ' center them if they are linear or angular.
+    ' Add them to the ObjectCollection to be arranged
+
+    oDrawingDimensions=oSheet.DrawingDimensions
+    oDimsToBeArranged = ThisApplication.TransientObjects.CreateObjectCollection
+    
+    For Each oDrawingDim In oDrawingDimensions
+        If TypeOf oDrawingDim Is LinearGeneralDimension Or TypeOf oDrawingDim Is AngularGeneralDimension Then
+           oDrawingDim.CenterText
+
+           oDimsToBeArranged.Add(oDrawingDim)
+
+        End If
+    Next
+    oDrawingDimensions.Arrange(oDimsToBeArranged)

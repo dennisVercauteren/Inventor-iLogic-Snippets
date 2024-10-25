@@ -1,0 +1,38 @@
+﻿Public Sub main RotateCamera() 
+   ' Get the active camera. 
+   Dim cam As Camera 
+ cam = ThisApplication.ActiveView.Camera 
+   Dim tg As TransientGeometry 
+  tg = ThisApplication.TransientGeometry 
+
+   ' Define the number of steps in the animation. 
+   Dim steps As Integer 
+   steps = 10
+
+   ' Define the distance between the eye and target. 
+   Dim eyeDistance As Double 
+   eyeDistance = 1000
+
+   ' Calculate pi. 
+   Dim PI As Double 
+   PI = Atan(1) * 4 
+
+   ' Iterate the specified number of steps. 
+   Dim i As Integer  
+   For i = 1 To steps  
+      ' Calculate the x and y coordinates of the eye. 
+      Dim x As Double 
+      Dim y As Double 
+      x = eyeDistance * Cos(i / steps * (2 * PI)) 
+      y = eyeDistance * Sin(i / steps * (2 * PI)) 
+
+      ' Set the eye using calculated x, y and a hard coded z value. 
+      cam.Eye = tg.CreatePoint(x, y, z) 
+
+      ' Define the up vector as positive z. 
+      cam.UpVector = tg.CreateUnitVector(0, 0, 1) 
+
+      ' Apply the current camera definition to the view. 
+      cam.ApplyWithoutTransition 
+   Next 
+End Sub

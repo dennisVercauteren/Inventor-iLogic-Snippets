@@ -1,0 +1,50 @@
+﻿' Get the STEP translator Add-In.
+    Dim oSTEPTranslator As TranslatorAddIn
+    oSTEPTranslator = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+
+    If oSTEPTranslator Is Nothing Then
+        MsgBox ("Could not access STEP translator.")
+        Exit Sub
+    End If
+
+    Dim oContext As TranslationContext
+    oContext = ThisApplication.TransientObjects.CreateTranslationContext
+    Dim oOptions As NameValueMap
+    oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+    If oSTEPTranslator.HasSaveCopyAsOptions(ThisApplication.ActiveDocument, oContext, oOptions) Then
+        ' Set application protocol.
+        ' 2 = AP 203 - Configuration Controlled Design
+        ' 3 = AP 214 - Automotive Design
+        oOptions.Value("ApplicationProtocolType") = 3
+
+        ' Other options...
+        'oOptions.Value("Author") = ""
+        'oOptions.Value("Authorization") = ""
+        'oOptions.Value("Description") = ""
+        'oOptions.Value("Organization") = ""
+		oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+        oContext.Type = kFileBrowseIOMechanism
+		
+		oDate = DateTime.Now.ToString("yyyy-MM-dd")
+		oProjectnumber = iProperties.Value("Custom","BPROJNR")
+		Dim RootProjectnummer As String = oProjectnumber.Substring(0, 6)
+		Dim oDocumentnumber As String = iProperties.Value("Custom","IDNR")
+		Dim oRevision As String = iProperties.Value("Custom","REV")
+		oFolder = "Z:\SAP\Project"
+		oPublication = oFolder & "\" & RootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+
+        Dim oData As DataMedium
+      oData = ThisApplication.TransientObjects.CreateDataMedium
+      oDataMedium.FileName = oPublication &  "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision &".stp"
+	  
+	  Dim oCam as Camera
+oCam = ThisApplication.ActiveView.Camera
+oCam.Perspective = Perspective
+oCam.ApplyWithoutTransition()
+ThisApplication.ActiveView.Fit
+
+        Call oSTEPTranslator.SaveCopyAs(ThisApplication.ActiveDocument, oContext, oOptions, oDataMedium)
+    End If
+
+i = MessageBox.Show("Open Folder Publication", "Open?",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then iLogicVb.RunExternalRule("IlogicSAPOpenFolderPublication")

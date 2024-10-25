@@ -1,0 +1,2 @@
+﻿iProperties.Value("Custom", "Projectleider")=Parameter("Projectleider")
+iProperties.Value("Custom", "Verkoper")=Parameter("Verkoper")

@@ -1,0 +1,40 @@
+﻿ 
+'query user
+question = MessageBox.Show("Do you want to create a dxf?", "iLogic Question",MessageBoxButtons.YesNo,MessageBoxIcon.Question)
+
+'set condition based on answer
+
+Dim DXFAddIn As TranslatorAddIn  
+DXFAddIn = ThisApplication.ApplicationAddIns.ItemById("{C24E3AC4-122E-11D5-8E91-0010B541CD80}")  
+'Set a reference to the active document (the document to be published).  
+Dim oDocument As Document  
+oDocument = ThisApplication.ActiveDocument  
+Dim oContext As TranslationContext  
+oContext = ThisApplication.TransientObjects.CreateTranslationContext  
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism 
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".dxf"
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+' Create a NameValueMap object  
+Dim oOptions As NameValueMap  
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap  
+' Create a DataMedium object  
+Dim oDataMedium As DataMedium  
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium  
+' Check whether the translator has 'SaveCopyAs' options  
+If DXFAddIn.HasSaveCopyAsOptions(oDocument, oContext, oOptions) Then  
+Dim strIniFile As String  
+strIniFile = "C:\temp\dxfout.ini"  
+' Create the name-value that specifies the ini file to use.  
+oOptions.Value("Export_Acad_IniFile") = strIniFile  
+End If  
+'get dxf target folder path
+oFolder = Left(oPath, InStrRev(oPath, "\",-1)) & "Master tekeningen"
+'Set the destination file name  
+oDataMedium.FileName = oFolder & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision &".dxf" 
+'Publish document.  
+DXFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)  
+'Launch the dxf file in whatever application Windows is set to open this document type with  
+i = MessageBox.Show("Preview the DXF file?", "Title",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then ThisDoc.Launch(oDataMedium.FileName) 

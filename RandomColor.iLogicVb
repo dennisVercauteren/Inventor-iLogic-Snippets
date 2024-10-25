@@ -1,0 +1,7 @@
+﻿Dim num As Long
+num = ThisApplication.ActiveDocument.ComponentDefinition.Occurrences.Count
+jj=1
+While jj<num+1
+Component.Color(ThisApplication.ActiveDocument.ComponentDefinition.Occurrences.Item(jj).Name) = "Red"
+End While
+iLogicVb.UpdateWhenDone = True

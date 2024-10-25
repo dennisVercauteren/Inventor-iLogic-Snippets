@@ -1,0 +1,52 @@
+﻿
+'Get the active document and the active Camera Position
+oInventor = ThisApplication
+oDoc = oInventor.ActiveDocument
+oView = oInventor.ActiveView
+oCamera = oView.Camera
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oProjectnumber = iProperties.Value("Custom","BPROJNR")
+Dim RootProjectnummer As String = oProjectnumber.Substring(0, 6)
+
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+Dim oDocumentnumber As String = iProperties.Value("Custom","IDNR")
+Dim oRevision As String = iProperties.Value("Custom","REV")
+
+'Get the Save location
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".pdf"
+oFolder = "Z:\SAP\Project"
+oPublication = oFolder & "\" & RootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate
+Counter = 0
+FileExists = True
+
+'check to see if the file to be exported already exists
+Do While FileExists    
+    ' Define name of exported file - note a .stp file extension 
+    ' Is currently being used. In this example I am exporting a Step file
+    CurrentFile = oPublication & "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & "-0" & Counter & ".jpg"
+    
+    If Dir(CurrentFile) <> "" Then ' The file does exist
+        Counter += 1
+        FileExists = True
+    Else
+	FileExists = False
+'	SaveAs = MessageBox.Show("Export file as '" & CurrentFile & _
+'        "'?", "Cadline iLogic", _
+'        MessageBoxButtons.YesNo, MessageBoxIcon.Question, _
+'        MessageBoxDefaultButton.Button1)
+'        If SaveAs = vbNo Then
+'            Return
+'        Else ' User says continue
+'            FileExists = False
+'        
+'        End If
+End If
+Loop
+
+oInventor.DisplayOptions.Show3DIndicator = False
+
+Call oView.SaveAsBitmap(oPublication & "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & "-" & "0" & Counter & ".jpg", 2480, 3508)
+oInventor.DisplayOptions.Show3DIndicator = True
+i = MessageBox.Show("Preview the .jpg file?", "Title",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then ThisDoc.Launch(oPublication & "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & "-" & "0" & Counter & ".jpg") 
+

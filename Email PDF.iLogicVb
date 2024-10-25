@@ -1,0 +1,98 @@
+﻿oFileName = ThisDoc.FileName(False) 'without extension
+oPDFAddIn = ThisApplication.ApplicationAddIns.ItemById ("{0AC6FD96-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+
+'Define the drawing
+Dim oDrawing As DrawingDocument
+oDrawing = ThisDoc.Document
+
+Dim oSheet As Sheet
+Dim lPos As Long
+Dim rPos As Long
+Dim sLen As Long
+Dim sSheetName As String
+Dim iSheetNumber As Integer
+
+'step through each drawing sheet
+For Each oSheet In oDrawing.Sheets
+
+'find the seperator in the sheet name:number
+lPos = InStr(oSheet.Name, ":")
+
+'find the number of characters in the sheet name
+sLen = Len(oSheet.Name)
+
+'find the sheet name
+sSheetName = Left(oSheet.Name, lPos -1)
+
+'find the sheet number
+iSheetNumber = Right(oSheet.Name, sLen -lPos)
+
+'set PDF Options
+If oPDFAddIn.HasSaveCopyAsOptions(oDataMedium, oContext, oOptions) Then
+oOptions.Value("All_Color_AS_Black") = 0
+oOptions.Value("Remove_Line_Weights") = 1
+oOptions.Value("Vector_Resolution") = 400
+oOptions.Value("Sheet_Range") = Inventor.PrintRangeEnum.kPrintSheetRange
+oOptions.Value("Custom_Begin_Sheet") = iSheetNumber
+oOptions.Value("Custom_End_Sheet") = iSheetNumber
+End If
+
+'get PDF target folder path
+oFolder = "C:\Temp"
+
+'Check for the PDF folder and create it if it does not exist
+If Not System.IO.Directory.Exists(oFolder) Then
+System.IO.Directory.CreateDirectory(oFolder)
+End If
+'Set the PDF target file name
+oDataMedium.FileName = oFolder &  "\" & oFileName & ".pdf"
+
+'Publish document
+oPDFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+
+Next
+
+' Start Outlook.
+ ' If it is already running, you'll use the same instance...
+   Dim oOApp
+   oOApp = CreateObject("Outlook.Application")
+   
+' Log on. Doesn't hurt if you are already running and logged on...
+   Dim olNs
+   olNs = oOApp.GetNamespace("MAPI")
+   olNs.Logon
+
+'get the Inventor user name from the Inventor Options
+myName= ThisApplication.GeneralOptions.UserName
+
+'get current time
+
+'save the file
+ThisDoc.Save
+
+'send email using outlook
+Dim oOMail
+oOMail = oOApp.CreateItem(olMailItem)
+
+'Location created .pdf
+
+Dim oAttachment As String = oFolder &  "\" & oFileName & ".pdf"
+
+With oOMail
+            'replace with your client's email address<b>and this is bold text</b>
+            .To = ""
+            .Subject = "document:" & oFileName
+           	.htmlbody = " " 
+			.htmlbody = .htmlbody & "<BODY style=font-size:12pt;font-family:Calibri>Beste," & "<br>"			
+			.htmlbody = .htmlbody & "Je kan tekening: <b>" & oFileName & "</b> vinden in bijlage en onder: " & "<br>"
+			.htmlbody = .htmlbody & myname &"</BODY>"
+			.Attachments.Add (oAttachment)
+            .Display
+End With
+
+

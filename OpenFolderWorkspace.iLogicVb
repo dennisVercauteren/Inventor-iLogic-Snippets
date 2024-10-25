@@ -1,0 +1,4 @@
+﻿
+oPath = ThisDoc.WorkspacePath()
+oFolder = Left(oPath, InStrRev(oPath, "\",)) & "Inventor"
+Shell("explorer.exe " & oFolder,vbNormalFocus)

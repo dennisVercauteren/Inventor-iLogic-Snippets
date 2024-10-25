@@ -1,0 +1,25 @@
+﻿'Define the open document
+Dim oDoc As Document
+oDoc = ThisDoc.Document
+
+'Look at all of the files referenced in the open document
+Dim docFile As Document
+For Each docFile In oDoc.AllReferencedDocuments
+
+'open the indexed file
+'true opens the file normaly
+'false opens the file programatically without generating the graphics
+ThisApplication.Documents.Open(docFile.FullFileName, True)
+
+'run rule in the drawing document
+auto = iLogicVb.Automation
+iLogicVb.RunExternalRule("HomeView")
+
+
+'you may also save And close this drawing document
+docFile.Save
+docFile.Close
+	
+Next
+
+iLogicVb.UpdateWhenDone = True

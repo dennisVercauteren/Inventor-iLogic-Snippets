@@ -1,0 +1,4 @@
+﻿oPath = "Z:\Branche Food\Users\DV\Bibliotheek"
+oFolder = "Z:\Branche Food\Users\DV\Bibliotheek"
+oPublication = "Z:\Branche Food\Users\DV\Bibliotheek"
+Shell("explorer.exe " & oPublication,vbNormalFocus)

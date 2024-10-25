@@ -1,0 +1,3 @@
+﻿ThisApplication.CommandManager.ControlDefinitions.Item _
+("AppViewCubeHomeCmd").Execute
+iProperties.PartColor="Blue Chrome"

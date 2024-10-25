@@ -1,0 +1,2 @@
+﻿iLogicVb.RunExternalRule("IlogicSAPSaveAsPdf")
+iLogicVb.RunExternalRule("IlogicSAPSaveAsDwg")

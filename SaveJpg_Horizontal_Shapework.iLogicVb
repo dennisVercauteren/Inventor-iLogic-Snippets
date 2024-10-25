@@ -1,0 +1,22 @@
+﻿ 
+'Get the active document and the active Camera Position
+oInventor = ThisApplication
+oDoc = oInventor.ActiveDocument
+oView = oInventor.ActiveView
+oCamera = oView.Camera
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+
+'Get the Save location
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oVolgnummer = iProperties.Value("Custom", "Volgnummer")
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".pdf"
+oFolder = Left(oPath, InStrRev(oPath, "\",-1))
+oPublication = "C:\Users\dVercauteren\Google Drive\005. SHAPEWORK\PROJECTEN AFBEELDINGEN INVENTOR"
+
+Call oView.SaveAsBitmap(oPublication & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision & "-" & oVolgnummer &".jpg", 3508, 3508)
+
+
+i = MessageBox.Show("Preview the .jpg file?", "Title",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then ThisDoc.Launch(oPublication & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision & "-" & oVolgnummer & ".jpg") 

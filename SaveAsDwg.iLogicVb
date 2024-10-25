@@ -1,0 +1,52 @@
+﻿'------- start of iLogic code ------------------- 
+iProperties.Value("Custom","BPROJNR") = iProperties.Value("Project", "Project")
+iProperties.Value("Custom","IDNR") = iProperties.Value("Project", "Part Number")
+iProperties.Value("Custom","REV") =  iProperties.Value("Project", "Revision Number")
+
+' Get the DWG translator Add-In. 
+Dim DWGAddIn As TranslatorAddIn 
+DWGAddIn = ThisApplication.ApplicationAddIns.ItemById _
+("{C24E3AC4-122E-11D5-8E91-0010B541CD80}") 
+
+'Set a reference to the active document 
+Dim oDocument As Document 
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".dwg"
+oDocument = ThisApplication.ActiveDocument 
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oFileName = ThisDoc.FileName(False) 'without extension
+Dim oContext As TranslationContext 
+oContext = ThisApplication.TransientObjects.CreateTranslationContext 
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism 
+' Create a NameValueMap object 
+Dim oOptions As NameValueMap 
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap 
+
+' Create a DataMedium object 
+Dim oDataMedium As DataMedium 
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium 
+
+' Check whether the translator has 'SaveCopyAs' options 
+If DWGAddIn.HasSaveCopyAsOptions(oDocument, oContext, oOptions) Then 
+    ' DWG version.
+    ' 23 = ACAD 2000
+    ' 25 = ACAD 2004
+    ' 27 = ACAD 2007
+    ' 29 = ACAD 2010 
+    oOptions.Value("DwgVersion") = 23
+Dim strIniFile As String 
+strIniFile = "Z:\Branche Food\Users\DV\Bronelementen\InventorConfiguration\DwgExport.ini" 
+' Create the name-value that specifies the ini file to use. 
+oOptions.Value("Export_Acad_IniFile") = strIniFile 
+End If 
+
+'get path and file name
+oFolder = Left(oPath, InStrRev(oPath, "\",-1))
+oPublication = oFolder & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+
+'Set the DWG target file name
+oDataMedium.FileName = oPublication & "\" & oProjectnumber & "-" & oPartnumber & "-" & oRevision &".dwg"
+DWGAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium) 
+'------- end of iLogic code -------------------

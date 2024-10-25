@@ -1,0 +1,70 @@
+﻿oPath = ThisDoc.WorkspacePath()
+Dim Str As String = oPath
+Str = Str.Substring(22, Str.Length - 22)
+Dim ProjectNumber As String = Str.Substring(0, Str.IndexOf("\")) 
+iProperties.Value("Project", "Project")=ProjectNumber
+
+oDate = DateTime.Now.ToString("yyyy-MM-dd") 
+oTime = DateTime.Now.ToString("hh-mm-ss") 
+SharedVariable("excelLocation")= "Z:\Branche Food\Users\DV\TimeLog\TimeLogDV.xlsx"
+excelLocation = SharedVariable("excelLocation")
+SharedVariable("sheetName")= "Blad1"
+sheetName = SharedVariable("sheetName")
+SharedVariable("rowPN")= "Project"
+rowPN = SharedVariable("rowPN")
+iProperties.Value("Project", "Revision Number") = "00"
+
+'Get the active document and the active Camera Position
+oInventor = ThisApplication
+oDoc = oInventor.ActiveDocument
+oView = oInventor.ActiveView
+oCamera = oView.Camera
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+
+'Get the Save location
+oPartnumber = iProperties.Value("Project", "Part Number")
+oProjectnumber = iProperties.Value("Project", "Project")
+oRevision = iProperties.Value("Project", "Revision Number")
+oPublication = "Z:\Branche Food\Users\DV\TimeLog"
+
+Call oView.SaveAsBitmap(oPublication & "\" & oDate & "-" & oTime & "-" & oProjectnumber & "-" & oPartnumber & "-" & oRevision &".jpg", 1920, 1080)
+
+
+
+
+
+GoExcel.Open(excelLocation, sheetName)
+
+'index row 2 through 10000
+	For rowPN = 2 To 10000
+'find first empty cell in column A
+ If (GoExcel.CellValue("A" & rowPN) = "") Then
+'create a variable for the cell value that is one row less than the empty cell row
+    lastPN = GoExcel.CellValue("A" & rowPN)
+    lastDesc = GoExcel.CellValue("B" & rowPN)
+         Exit For	
+		End If
+Next
+
+i = rowPN
+
+	
+
+GoExcel.CellValue(excelLocation, sheetName, ("A" & i)) = iProperties.Value("Project", "Project")
+GoExcel.CellValue(excelLocation, sheetName, ("B" & i)) = iProperties.Value("Project", "Part Number")
+GoExcel.CellValue(excelLocation, sheetName, ("C" & i)) = oDate
+GoExcel.CellValue(excelLocation, sheetName, ("D" & i)) = oTime
+GoExcel.CellValue(excelLocation, sheetName, ("E" & i)) = oPublication & "\" & oDate & "-" & oTime & "-" & oProjectnumber & "-" & oPartnumber & "-" & oRevision & ".jpg"
+
+GoExcel.Save
+GoExcel.Save
+GoExcel.Close
+GoExcel.Close
+
+
+
+
+
+
+
+ 

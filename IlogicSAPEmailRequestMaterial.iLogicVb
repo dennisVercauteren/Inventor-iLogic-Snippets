@@ -1,0 +1,87 @@
+﻿oProjectnumber = iProperties.Value("Custom","BPROJNR")
+Dim RootProjectnummer As String = oProjectnumber.Substring(0, 6)
+oFileName = ThisDoc.FileName(False) 'without extension
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+Dim oDocumentnumber As String = iProperties.Value("Custom","IDNR")
+Dim oRevision As String = iProperties.Value("Custom","REV")
+oFolder = "Z:\SAP\Project"
+Dim oPublication As String = oFolder & "\" & RootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+oRevision = iProperties.Value("Custom", "REV")
+iProperties.Value("Custom", "Material") = "A2"
+iProperties.Value("Custom", "Finishing") = "2"
+iProperties.Value("Custom", "Leverancier") = "Raes"
+
+Dim oPrice As String = InputBox("Hoeveel zou dit kosten", "Prijs", "250")
+
+
+iLogicVb.RunExternalRule("IlogicSAPSaveAsPdfdwg")
+
+Dim oDWG As String = oPublication &  "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & ".dwg"
+Dim oPDF As String = oPublication &  "\" & oProjectnumber & "-" & oDocumentnumber & "-" & oRevision & ".pdf"
+
+doc = ThisDoc.Document
+customPropertySet = doc.PropertySets.Item("Inventor User Defined Properties")
+modeldocname = IO.Path.GetFileName(ThisDoc.ModelDocument.FullFileName)
+mass = iProperties.Mass(modeldocname)
+iProperties.Value("Custom", "Mass") = Round(mass,2) & " kg"
+InventorVb.DocumentUpdate()
+
+
+ ' Start Outlook.
+ ' If it is already running, you'll use the same instance...
+   Dim oOApp
+   oOApp = CreateObject("Outlook.Application")
+   
+' Log on. Doesn't hurt if you are already running and logged on...
+   Dim olNs
+   olNs = oOApp.GetNamespace("MAPI")
+   olNs.Logon
+'get the Inventor user name from the Inventor Options
+myName= ThisApplication.GeneralOptions.UserName
+'get current time
+oTime = Now.ToShortTimeString
+'set status tag to For Review and time stamp
+iProperties.Value("Status", "Status") = "For Review @ " &  oTime
+'set the Design State to Pending
+iProperties.Value("Status", "Design State") = "Pending"
+'set the Checked By to user name from the Inventor Options
+iProperties.Value("Status", "Checked By") = myName
+'set the Checked Date to the current date
+iProperties.Value("Status", "Checked Date") = Now
+'save the file
+ThisDoc.Save
+
+'send email using outlook
+Dim oOMail
+
+oOMail = oOApp.CreateItem(olMailItem)
+
+With oOMail
+            'replace with your client's email address
+            .To = "Wim Van Roy <Wim.VanRoy@azo.com>"
+            .Subject = "Aanvraag materiaalnummer: " & iProperties.Value("Custom", "IDNR") &" - "&  "Project:" & iProperties.Value("Custom", "BPROJNR") &" - "& iProperties.Value("Custom", "KUNDE") &" - Onderwerp: "& iProperties.Value("Custom", "ZEILE1")
+          	.htmlBody = 	"<BODY style=font-size:12pt;font-family:Calibri>Beste Wim," & "<br>"
+			.htmlBody = .htmlBody & "Zou je een materiaalnummer willen aanmaken voor " & iProperties.Value("Custom", "IDNR") & " ."& "<br>"
+			.htmlBody = .htmlBody & "Je kan tekeningnummer: <b>" & iProperties.Value("Custom", "IDNR") & "</b> vinden in bijlage en SAP:"& "<br>"
+			.htmlBody = .htmlBody & "<a href='" & oPublication & "'>" & oPublication & "</a>." & "<br>"
+			.htmlBody = .htmlBody & "Omschrijving : " & iProperties.Value("Custom", "ZEILE1")& " - "  & "<br>"
+			.htmlBody = .htmlBody & "Werkstoff : " & iProperties.Value("Custom", "Material")& "<br>"
+			.htmlBody = .htmlBody & "Afwerking : " & iProperties.Value("Custom", "Finishing")& "<br>"
+			.htmlBody = .htmlBody & "Gewicht netto : " & iProperties.Value("Custom", "Mass")& "<br>"
+			.htmlBody = .htmlBody & "Gewicht Bruto: - " & "<br>"
+			.htmlBody = .htmlBody & "Productie doorlooptijd: 7 dagen" & "<br>"
+			.htmlBody = .htmlBody & "Tekeningnummer: " & iProperties.Value("Custom", "IDNR")	& "<br>"
+			.htmlBody = .htmlBody & "Leverancier: " & iProperties.Value("Custom", "Leverancier")& "<br>"	
+			.htmlBody = .htmlBody & "Aankoop eenheidsprijs: " & oPrice & " euro <br>"	
+			.htmlBody = .htmlBody & "Projectleider: " & iProperties.Value("Status", "Eng. Approved By")& "<br>"	
+			.htmlBody = .htmlBody & " "& "<br>"
+			.htmlBody = .htmlBody & "Zou je ook de dwg willen uploaden in SAP ?"& "<br>"
+			.htmlBody = .htmlBody & "Bedankt,"& "<br>"
+			.htmlBody = .htmlBody & " "& "<br>"
+			.htmlBody = .htmlBody & myname & "</BODY>"& "<br>"
+			.Attachments.Add (oDWG)
+			.Attachments.Add (oPDF)
+            .Display
+			
+End With
+'------- end of iLogic code -------------------

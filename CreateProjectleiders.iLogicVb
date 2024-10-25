@@ -1,0 +1,27 @@
+﻿Imports Inventor.UnitsTypeEnum
+Dim oPartDoc As Document
+oPartDoc = ThisDoc.Document
+If oPartDoc.DocumentType = kPartDocumentObject Then
+
+Dim oPartCompDef As PartComponentDefinition
+oPartCompDef = oPartDoc.ComponentDefinition
+
+Dim oParams As Parameters
+oParams=oPartCompDef.Parameters
+Dim oUserParams As UserParameters
+oUserParams=oParams.UserParameters
+Dim oAwesomeParameter As Parameter
+Try
+otester = oUserParams.Item("Projectleider")
+otester1 = oUserParams.Item("Verkoper")
+Catch
+oInsulationType=oUserParams.AddByValue("Projectleider", "Tom Steurs", kTextUnits)
+oInsulationType=oUserParams.AddByValue("Verkoper", "Gerrit Ver Eecke", kTextUnits)
+MultiValue.SetList("Verkoper", "Gerrit Ver Eecke", "Jean-Paul van der Heiden", "Karel Claes")
+MultiValue.SetList("Projectleider", "Mark Haarman", "Wim Van Roy", "Tom Steurs", "Jan Vermeulen", "André Correljé")
+End Try
+End If
+Parameter.Param("Projectleider").ExposedAsProperty = False
+Parameter.Param("Projectleider").IsKey = True
+Parameter.Param("Verkoper").ExposedAsProperty = False
+Parameter.Param("Verkoper").IsKey = True

@@ -1,0 +1,4 @@
+﻿
+oPath = ThisDoc.WorkspacePath() & "/" & "Master tekeningen" & ".pdf"
+oFolder = Left(oPath, InStrRev(oPath, "\",-1)) & "Master tekeningen"
+Shell("explorer.exe " & oFolder,vbNormalFocus)

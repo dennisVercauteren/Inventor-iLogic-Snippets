@@ -1,0 +1,21 @@
+oPath = ThisDoc.WorkspacePath()
+Dim Str As String = oPath
+Str = Str.Substring(22, Str.Length - 22)
+Dim ProjectNumber As String = Str.Substring(0, Str.IndexOf("\")) 
+iProperties.Value("Project", "Project")=ProjectNumber
+
+Dim IPJ as String
+Dim IPJ_Name As String
+Dim IPJ_Path As String
+Dim FNamePos As Long
+'set a reference to the FileLocations object.
+IPJ = ThisApplication.FileLocations.FileLocationsFile
+'get the location of the last backslash seperator
+FNamePos = InStrRev(IPJ, "\", -1)    
+'get the project file name with the file extension
+IPJ_Name = Right(IPJ, Len(IPJ) - FNamePos)
+'get the project name (without extension)
+IPJ_ShortName = Left(IPJ_Name, Len(IPJ_Name) - 4)
+'get the path of the folder containing the project file
+IPJ_Folder_Location = Left(IPJ, Len(IPJ) - Len(IPJ_Name))
+iProperties.Value("Summary", "Company") = Mid(IPJ_ShortName,13)

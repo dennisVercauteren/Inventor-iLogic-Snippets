@@ -1,0 +1,5 @@
+﻿iLogicVb.RunExternalRule("SaveAsPdf")
+iLogicVb.RunExternalRule("SaveAsDWG")
+
+i = MessageBox.Show("Open Folder Publication", "Open?",MessageBoxButtons.YesNo,MessageBoxIcon.Question)  
+If i = vbYes Then iLogicVb.RunExternalRule("OpenFolderPublication")

@@ -1,0 +1,16 @@
+﻿'------------ start of ilogic--------------------
+'get currently selected component
+Dim oOccurrence As ComponentOccurrence
+Try
+  oOccurrence = ThisDoc.Document.SelectSet.Item(1)
+Catch
+  MessageBox.Show("Please select a component before running this rule.", "iLogic")
+  Return
+End Try
+
+Dim doc As Document
+Dim CurFileName As String
+
+'set the selected item
+oOccurrence = ThisApplication.ActiveDocument.SelectSet.Item(1)
+Component.Color(oOccurrence.Name) = "Green" 

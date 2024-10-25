@@ -1,0 +1,13 @@
+﻿ 
+    Dim oPartDoc As PartDocument 
+  oPartDoc = ThisApplication.ActiveDocument 
+
+    ' Get a reference to the RenderStyle named "Red". 
+    Dim oRenderStyle As RenderStyle 
+  oRenderStyle = oPartDoc.RenderStyles.Item("Red") 
+
+    ' Assign the render style to the part. 
+    oPartDoc.ActiveRenderStyle = oRenderStyle 
+
+    ' Force the view to update to see the change. 
+    ThisApplication.ActiveView.Update 

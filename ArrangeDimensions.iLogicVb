@@ -1,0 +1,40 @@
+﻿''-------
+' Set a reference to the active drawing document
+Dim oDrawDoc As DrawingDocument
+oDrawDoc = ThisApplication.ActiveDocument
+
+' Get the collection of dimensions on the active sheet.
+Dim oDimensions As DrawingDimensions
+oDimensions = oDrawDoc.ActiveSheet.DrawingDimensions
+
+Dim oDrawDim As DrawingDimension
+
+' Iterate over all dimensions in the drawing and
+' center them if they are linear or angular.
+For Each oDrawDim In oDimensions
+    If TypeOf oDrawDim Is LinearGeneralDimension Or _
+       TypeOf oDrawDim Is AngularGeneralDimension Then
+        Call oDrawDim.CenterText
+    End If
+Next
+
+' Get a reference to the select set and clear it.
+Dim oSelectSet As SelectSet
+oSelectSet = oDrawDoc.SelectSet
+oSelectSet.Clear
+
+' Add each dimension to the select set to select them.
+For Each oDrawDim In oDimensions
+    oSelectSet.Select(oDrawDim)   
+Next
+
+' Get the CommandManager object.
+Dim oCommandMgr As CommandManager
+oCommandMgr = ThisApplication.CommandManager
+
+' Get control definition for the arrange dimensions command.
+Dim oControlDef As ControlDefinition
+ oControlDef = oCommandMgr.ControlDefinitions.Item("DrawingArrangeDimensionsCmd")
+
+' Execute the command.
+Call oControlDef.Execute

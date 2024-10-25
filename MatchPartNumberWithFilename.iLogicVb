@@ -1,0 +1,14 @@
+﻿'exit if there are no drawing views
+If (ThisDrawing.ModelDocument Is Nothing) Then Return
+docname=ThisDoc.FileName(False) 'without extension 
+modelName = IO.Path.GetFileName(ThisDrawing.ModelDocument.FullFileName)
+modelName = Left(modelName, Len(modelName) - 4)   
+If docname = modelName
+iProperties.Value("Project", "Part Number") = docname
+Exit Sub
+Else
+MessageBox.Show("De bestandsnaam komt niet overeen met de Partnumber van het onderdeel dat op deze drawing staat", "Bestandsnaam is niet gelijk aan PartNumber", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1)
+'iProperties.Value("Project", "Part Number")= docname
+'iLogicVb.UpdateWhenDone = True
+End If
+

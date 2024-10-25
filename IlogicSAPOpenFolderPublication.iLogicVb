@@ -1,0 +1,7 @@
+﻿
+oProjectnumber = iProperties.Value("Custom","BPROJNR")
+Dim RootProjectnummer As String = oProjectnumber.Substring(0, 6)
+oDate = DateTime.Now.ToString("yyyy-MM-dd")
+oFolder = "Z:\SAP\Project"
+oPublication = oFolder & "\" & RootProjectnummer & "\" & oProjectnumber & "\" & "Technisch dossier" & "\" & "Tekendossier mechanisch" & "\" & "Werkboek CAD" & "\" & "Publicatie" & "\"& oDate & "\"
+Shell("explorer.exe " & oPublication,vbNormalFocus)

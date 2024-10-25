@@ -1,0 +1,34 @@
+﻿'define the active document
+oDoc = ThisDoc.Document
+'create a file dialog box
+Dim oFileDlg As inventor.FileDialog = Nothing
+InventorVb.Application.CreateFileDialog(oFileDlg)
+
+'check file type and set dialog filter
+If oDoc.DocumentType = kPartDocumentObject Then
+oFileDlg.Filter = "Autodesk Inventor Part Files (*.ipt)|*.ipt"
+Else If oDoc.DocumentType = kAssemblyDocumentObject Then
+oFileDlg.Filter = "Autodesk Inventor Assembly Files (*.iam)|*.iam"
+Else If oDoc.DocumentType = kDrawingDocumentObject Then
+oFileDlg.Filter = "Autodesk Inventor Drawing Files (*.idw)|*.idw"
+End If
+
+'set the directory to open the dialog at
+oFileDlg.InitialDirectory = ThisDoc.WorkspacePath()
+'set the file name string to use in the input box
+oFileDlg.FileName = iProperties.Value("Project", "Part Number")
+
+'work with an error created by the user backing out of the save
+oFileDlg.CancelError = True
+On Error Resume Next
+'specify the file dialog as a save dialog (rather than a open dialog)
+oFileDlg.ShowSave()
+
+'catch an empty string in the imput
+If Err.Number <> 0 Then
+MessageBox.Show("No File Saved.", "iLogic: Dialog Canceled")
+ElseIf oFileDlg.FileName <> "" Then
+MyFile = oFileDlg.FileName
+'save the file
+oDoc.SaveAs(MyFile, False) 'True = Save As Copy & False = Save As
+End If
